@@ -26,9 +26,6 @@ button {
     box-shadow: 0 2px 10px black;
 }
 
-/* Points area */
-
-
 /* Result area */
 .result {
     display: flex;
@@ -67,6 +64,67 @@ button {
 .special-attack {
     background-color: #ff9800;
     color: #000;
+}
+
+.animate-border-special-attack {
+    border: 1px solid white;
+    animation: borderIncrease 4s ease-in-out;    
+    animation-iteration-count: 10;
+}
+
+
+@keyframes borderIncrease {
+    0%, 25% {
+        border-width: 2px;
+    }
+    50%, 75% {
+        border-width: 3px;
+    }
+    100% {
+        border-width: 4px;
+    }
+}
+
+.move-div-player {
+    position: relative;
+    animation: moveAnimationPlayer 1s ease-in-out forwards;
+    animation-iteration-count: 1;
+}
+
+.move-div-monster {
+    position: relative;
+    animation: moveAnimationMonster 1s ease-in-out forwards;
+    animation-iteration-count: 1;
+}
+
+@keyframes moveAnimationPlayer {
+    0% {
+        left: 0;
+    }
+    25% {
+        left: -10px;
+    }
+    50% {
+        left: 50px;
+    }
+    100% {
+        left: 0;
+    }
+}
+
+@keyframes moveAnimationMonster {
+    0% {
+        right: 0;
+    }
+    25% {
+        right: -10px;
+    }
+    50% {
+        right: 50px;
+    }
+    100% {
+        right: 0;
+    }
 }
 
 .heal {

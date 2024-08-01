@@ -1,9 +1,9 @@
 <template>
-  <div class="panel buttons">
+  <div id="panel-button" class="panel buttons">
     <template v-if="running">
       <button @click="attack(false)" class="btn attack">Attack</button>
       <button @click="attack(true)" class="btn special-attack"
-       :disabled="specialAttackPlayer < 50" :class="specialAttackPlayer < 50 ? 'button-disabled' : 'button-enabled'">
+       :disabled="specialAttackPlayer <= 100" :class="specialAttackPlayer <= 100 ? 'button-disabled' : 'button-enabled, animate-border-special-attack'">
         Special Attack
       </button>
       <button @click="deffenseFunction" class="btn" style="background-color: brown; color: white">Deffense</button>
@@ -48,8 +48,7 @@ export default {
     attack(value) {
       this.$emit("attackPanelButton", value)
     },
-  }
-  
+  },
 }
 </script>
 

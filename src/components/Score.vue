@@ -1,5 +1,5 @@
 <template>
-  <div class="score">
+  <div class="score" :id="idDiv">
     <h1>{{ characterName }}</h1>
     <strong>HP</strong>
     <template v-if="characterName == 'Player'">
@@ -22,15 +22,6 @@
       </div>
       <div style="margin-bottom: 15px">{{ characterLife }}%</div>
     </template>
-    <!-- 
-    <template v-if="characterName == 'Player'">
-        <strong>MANA</strong>
-      <div class="mana-bar">
-        <div class="mana" :style="{ width: mana + '%' }"></div>
-      </div>
-      <div style="margin-bottom: 15px;">{{ mana }}%</div>
-    </template> -->
-
     <template v-if="characterName == 'Player'">
       <strong>SPECIAL ATTACK</strong>
       <div class="special-bar">
@@ -61,11 +52,6 @@ export default {
       required: true,
       default: 0,
     },
-    mana: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
     specialAttackPlayer: {
       type: Number,
       required: false,
@@ -75,7 +61,10 @@ export default {
       type: Number,
       required: false,
       default: 0
-    }
+    },
+    idDiv: {
+      type: String
+    },
   },
 };
 </script>
@@ -114,7 +103,8 @@ export default {
 .life-bar-monster {
   width: 80%;
   height: 20px;
-  border: 2px solid rgb(236, 171, 7);
+  border: 2px solid #aaa;
+  /*border: 2px solid rgb(236, 171, 7);*/
 }
 
 .life-bar-monster .life {
@@ -124,7 +114,7 @@ export default {
   background-color: red;
 }
 
-.mana-bar {
+/* .mana-bar {
   width: 80%;
   height: 20px;
   border: 1px solid #aaa;
@@ -135,7 +125,7 @@ export default {
   justify-content: center;
   height: 100%;
   background-color: rgb(11, 79, 226);
-}
+} */
 
 .special-bar {
   width: 80%;

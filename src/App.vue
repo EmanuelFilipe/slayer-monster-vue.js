@@ -3,11 +3,10 @@
     <PanelScores
       :playerLife="playerLife"
       :monsterLife="monsterLife"
-      :mana="mana"
       :specialAttackPlayer="specialAttackPlayer"
       :specialAttackMonster="specialAttackMonster"
-      :round="round"
     />
+    <div style="margin-left: 50px" class="move-div"></div>
     <PanelResults :hasResult="hasResult" :monsterLife="monsterLife" />
     <PanelButtons
       :running="running"
@@ -29,7 +28,7 @@ import PanelResults from "./components/PanelResults.vue";
 import PanelButtons from "./components/PanelButtons.vue";
 import PanelLogs from "./components/PanelLogs.vue";
 import eventBus from "../eventBus";
-
+import { PLAYER, MONSTER } from "../src/constants.js";
 export default {
   components: {
     PanelScores,
@@ -43,12 +42,13 @@ export default {
       playerLife: 100,
       deffensePlayer: 8,
       countOfHeals: 0,
-      mana: 0,
       specialAttackPlayer: 0,
       specialAttackMonster: 0,
       monsterLife: 100,
       logs: [],
-      round: 0
+      round: 0,
+      divScorePlayer: "",
+      divScoreMonster: "",
     };
   },
   computed: {
@@ -56,13 +56,14 @@ export default {
       return this.playerLife == 0 || this.monsterLife == 0;
     },
     characterRound() {
-      return this.round
-    }
+      return this.round;
+    },
   },
   created() {
     eventBus.whenRunningHasChanged((runningUpdated) => {
       // eslint-disable-next-line
       this.running = runningUpdated;
+      console.log("whenRunningHasChanged");
     });
   },
   methods: {
@@ -78,87 +79,89 @@ export default {
       this.playerLife = 100;
       this.monsterLife = 100;
       this.countOfHeals = 3;
-      this.mana = 0;
       this.specialAttackPlayer = 0;
       this.specialAttackMonster = 0;
       this.logs = [];
+      this.divScorePlayer = document.getElementById("blinkingDiv_PLAYER");
+      this.divScoreMonster = document.getElementById("blinkingDiv_MONSTER");
     },
     deffense() {
+      this.registerLog("Player used Defense this turn", "player");
+      this.turnMonster();
+      this.blinkingDiv("blinkingDiv_PLAYER");
+      //this.round++;
+      this.attackAnimation(this.divScoreMonster, "move-div-monster");
+      this.logs.unshift([]);
+    },
+    turnPlayer(special) {
+      this.hurtMonster(
+        "monsterLife",
+        5,
+        10,
+        special,
+        "Player",
+        "Monster",
+        "player"
+      );
+      this.increaseSpecialAttackBarPlayer(special);
+    },
+    turnMonster() {
       if (this.monsterLife > 0) {
-        // this.hurtEnemy(
-        //   "monsterLife",
-        //   7,
-        //   12,
-        //   false,
-        //   "Monster",
-        //   "Player",
-        //   "monster",
-        //   true
-        // );
-        this.hurtPlayer("playerLife", 7, 12, false, "Monster", "Player", "monster", true)
-        this.increaseSpecialAttackBarMonster();
+        this.hurtPlayer(
+          "playerLife",
+          8,
+          15,
+          this.specialAttackMonster == 100 ? true : false,
+          "Monster",
+          "Player",
+          "monster"
+        );
 
-        this.logs.unshift([]);
+        if (this.specialAttackMonster == 100) this.specialAttackMonster = 0;
+        else this.increaseSpecialAttackBarMonster();
       }
     },
     attack(special) {
-      this.round++
-
-      // this.hurtEnemy(
-      //   "monsterLife",
-      //   5,
-      //   10,
-      //   special,
-      //   "Player",
-      //   "Monster",
-      //   "player"
-      // );
-      this.hurtMonster("monsterLife", 5, 10, special, "Player", "Monster", "player")
-
-      if (this.monsterLife > 0) {
-        /*if (this.specialAttackMonster == 100){
-          aumentar dano
-             zerar especial
-
-        }*/
-        // this.hurtEnemy(
-        //   "playerLife",
-        //   7,
-        //   15,
-        //   false,
-        //   "Monster",
-        //   "Player",
-        //   "monster"
-        // );
-
-        this.hurtPlayer("playerLife", 7, 15, this.specialAttackMonster == 100 ? true : false, "Monster", "Player", "monster");
-
-        if (this.specialAttackMonster == 100)
-          this.specialAttackMonster = 0
-        else
-          this.increaseSpecialAttackBarMonster();
+      this.round++;
+      console.log("attack:getCharacterRound()", this.getCharacterRound());
+      if (this.getCharacterRound() === PLAYER) {
+        this.turnPlayer(special);
+        this.blinkingDiv("blinkingDiv_MONSTER");
+        this.attackAnimation(this.divScorePlayer, "move-div-player");
+        this.round++;
       }
 
-      this.blinkingDiv();
-      this.increaseSpecialAttackBarPlayer(special);
-
+      if (this.getCharacterRound() === MONSTER) {
+        var divButtons = document.getElementsByClassName("panel buttons");
+        setTimeout(() => {
+          divButtons[0].style.display = "none";
+          this.turnMonster();
+          this.blinkingDiv("blinkingDiv_PLAYER");
+          this.attackAnimation(this.divScoreMonster, "move-div-monster");
+        }, 2000);
+        setTimeout(() => {
+          divButtons[0].style.display = "";
+        }, 4000);
+      }
       //insert a empy row on array logs
-      this.logs.unshift([]);
+      //this.logs.unshift([]);
+    },
+    attackAnimation(divCharacter, className) {
+      divCharacter.classList.add(className);
+      setTimeout(() => {
+        divCharacter.classList.remove(className);
+      }, 2000);
     },
     increaseSpecialAttackBarPlayer(special) {
-      if (special)
-        this.specialAttackPlayer = 0;
-      else if (!special && this.playerLife > 0)
-        this.specialAttackPlayer += 10;
+      if (special) this.specialAttackPlayer = 0;
+      else if (!special && this.playerLife > 0) this.specialAttackPlayer += 10;
     },
     increaseSpecialAttackBarMonster() {
-      if (this.specialAttackMonster === 100)
-        this.specialAttackMonster = 0
-      if (this.monsterLife > 0)
-        this.specialAttackMonster += 20;
-  },
-    blinkingDiv() {
-      const blinkingDiv = document.getElementById("blinkingDiv");
+      if (this.specialAttackMonster === 100) this.specialAttackMonster = 0;
+      if (this.monsterLife > 0) this.specialAttackMonster += 20;
+    },
+    blinkingDiv(divName) {
+      const blinkingDiv = document.getElementById(divName);
       let blinkingCount = 0;
       let maxBlinking = 2;
       const interval = 250;
@@ -174,7 +177,16 @@ export default {
         }
       }, interval);
     },
-    hurtPlayer(prop, min, max, special, source, target, cls, deffenseActivated) {
+    hurtPlayer(
+      prop,
+      min,
+      max,
+      special,
+      source,
+      target,
+      cls,
+      deffenseActivated
+    ) {
       const plus = special ? this.getRandom(20, 30) : 0;
       //const damage = this.getRandom(min + plus, max + plus);
       const damage = this.getDamage(min, max, plus, deffenseActivated);
@@ -183,10 +195,14 @@ export default {
 
       if (special) {
         this.registerLog(
-          `${source} hit the ${target} with special attack damage: ${damage}`, cls);
+          `${source} hit the ${target} with special attack damage: ${damage}`,
+          cls
+        );
       } else {
         this.registerLog(
-          `${source} hit the ${target} with damage: ${damage}`, cls);
+          `${source} hit the ${target} with damage: ${damage}`,
+          cls
+        );
       }
     },
     hurtMonster(prop, min, max, special, source, target, cls) {
@@ -198,10 +214,14 @@ export default {
 
       if (special) {
         this.registerLog(
-          `${source} hit the ${target} with special attack damage: ${damage}`, cls);
+          `${source} hit the ${target} with special attack damage: ${damage}`,
+          cls
+        );
       } else {
         this.registerLog(
-          `${source} hit the ${target} with damage: ${damage}`, cls);
+          `${source} hit the ${target} with damage: ${damage}`,
+          cls
+        );
       }
     },
     /**
@@ -242,17 +262,12 @@ export default {
       return Math.round(value);
     },
     healAndHurt() {
+      //this.round++;
       this.heal(10, 15);
       this.countOfHeals -= 1;
-      this.hurtEnemy(
-        "playerLife",
-        7,
-        12,
-        false,
-        "Monster",
-        "Player",
-        "monster"
-      );
+      this.turnMonster();
+      this.blinkingDiv("blinkingDiv_PLAYER");
+      this.attackAnimation(this.divScoreMonster, "move-div-monster");
       //insert a empy row on array logs
       this.logs.unshift([]);
     },
@@ -266,36 +281,18 @@ export default {
       // o registro adicionado sempre será o primeiro da lista
       this.logs.unshift({ text, cls });
     },
+    getCharacterRound() {
+      let characterTurn = "";
+      if (this.round % 2 !== 0) characterTurn = PLAYER;
+      else if (this.round % 2 === 0) characterTurn = MONSTER;
+      return characterTurn;
+    },
   },
   watch: {
     // sempre que essa variavel for alterada, será monitorada
     hasResult(value) {
       if (value) this.running = false;
     },
-    characterRound(value) {
-      let characterTurn = ''
-      if (value % 2 !== 0)
-        characterTurn = "player"
-      else if (value % 2 === 0)
-        characterTurn = "monster"
-
-      console.log(characterTurn)
-      return characterTurn
-    }
-    // characterRound(value) {
-    //   console.log('value', value)
-    //   let n = value / 2;
-    //   console.log('n', n)
-    //   let characterTurn = ''
-      
-    //   if (n % 2 == 0)
-    //     characterTurn = "player"
-    //   else
-    //     characterTurn = "monster"
-
-    //   console.log(characterTurn)
-    //   return characterTurn
-    // }
   },
 };
 </script>
