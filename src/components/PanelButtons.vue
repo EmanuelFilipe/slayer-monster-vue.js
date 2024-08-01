@@ -3,7 +3,7 @@
     <template v-if="running">
       <button @click="attack(false)" class="btn attack">Attack</button>
       <button @click="attack(true)" class="btn special-attack"
-       :disabled="specialAttackPlayer <= 100" :class="specialAttackPlayer <= 100 ? 'button-disabled' : 'button-enabled, animate-border-special-attack'">
+       :disabled="specialAttackPlayer < 100" :class="specialAttackPlayer < 100 ? 'button-disabled' : 'button-enabled, animate-border-special-attack'">
         Special Attack
       </button>
       <button @click="deffenseFunction" class="btn" style="background-color: brown; color: white">Deffense</button>
@@ -77,5 +77,23 @@ export default {
    outline: none;
    font-size: 15px;
    font-weight: 600;
+}
+
+.animate-border-special-attack {
+    border: 1px solid white;
+    animation: borderIncrease 2s ease-in-out;    
+    animation-iteration-count: 20;
+}
+
+@keyframes borderIncrease {
+    0%, 25% {
+        border-width: 2px;
+    }
+    50%, 75% {
+        border-width: 3px;
+    }
+    100% {
+        border-width: 4px;
+    }
 }
 </style>

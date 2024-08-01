@@ -7,7 +7,6 @@
 
 <script>
 import Score from './Score.vue'
-import eventBus from '../../eventBus';
 export default {
   name: 'PanelScores',
   props: {
@@ -34,19 +33,6 @@ export default {
   },
   components: {
     Score
-  },
-  updated() {
-    eventBus.whenPlayerLifeHasChanged(updatedPlayerLife => {
-      console.log('whenPlayerLifeHasChanged')
-      // eslint-disable-next-line 
-      this.playerLife = updatedPlayerLife
-    })
-
-    eventBus.whenMonsterLifeHasChanged(updatedMonsterLife => {
-      console.log('whenMonsterLifeHasChanged')
-      // eslint-disable-next-line 
-      this.monsterLife = updatedMonsterLife
-    })
   },
   data() {
     return {

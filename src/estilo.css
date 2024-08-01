@@ -66,25 +66,6 @@ button {
     color: #000;
 }
 
-.animate-border-special-attack {
-    border: 1px solid white;
-    animation: borderIncrease 4s ease-in-out;    
-    animation-iteration-count: 10;
-}
-
-
-@keyframes borderIncrease {
-    0%, 25% {
-        border-width: 2px;
-    }
-    50%, 75% {
-        border-width: 3px;
-    }
-    100% {
-        border-width: 4px;
-    }
-}
-
 .move-div-player {
     position: relative;
     animation: moveAnimationPlayer 1s ease-in-out forwards;

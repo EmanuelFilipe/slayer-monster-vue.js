@@ -27,7 +27,6 @@ import PanelScores from "./components/PanelScores.vue";
 import PanelResults from "./components/PanelResults.vue";
 import PanelButtons from "./components/PanelButtons.vue";
 import PanelLogs from "./components/PanelLogs.vue";
-import eventBus from "../eventBus";
 import { PLAYER, MONSTER } from "../src/constants.js";
 export default {
   components: {
@@ -59,13 +58,6 @@ export default {
       return this.round;
     },
   },
-  created() {
-    eventBus.whenRunningHasChanged((runningUpdated) => {
-      // eslint-disable-next-line
-      this.running = runningUpdated;
-      console.log("whenRunningHasChanged");
-    });
-  },
   methods: {
     attackButton() {
       this.attack(false);
@@ -89,7 +81,6 @@ export default {
       this.registerLog("Player used Defense this turn", "player");
       this.turnMonster();
       this.blinkingDiv("blinkingDiv_PLAYER");
-      //this.round++;
       this.attackAnimation(this.divScoreMonster, "move-div-monster");
       this.logs.unshift([]);
     },
@@ -123,7 +114,6 @@ export default {
     },
     attack(special) {
       this.round++;
-      console.log("attack:getCharacterRound()", this.getCharacterRound());
       if (this.getCharacterRound() === PLAYER) {
         this.turnPlayer(special);
         this.blinkingDiv("blinkingDiv_MONSTER");
@@ -262,7 +252,6 @@ export default {
       return Math.round(value);
     },
     healAndHurt() {
-      //this.round++;
       this.heal(10, 15);
       this.countOfHeals -= 1;
       this.turnMonster();
