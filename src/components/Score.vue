@@ -1,6 +1,11 @@
 <template>
   <div class="score" :id="idDiv">
-    <h1>{{ characterName }}</h1>
+    <template v-if="characterName === 'Player'">
+      <h1>{{ characterName }}: {{ name }}</h1>
+    </template>
+    <template v-else>
+      <h1>{{ characterName }}</h1>
+    </template>
     <strong>HP</strong>
     <template v-if="characterName == 'Player'">
       <div class="life-bar">
@@ -65,6 +70,9 @@ export default {
     idDiv: {
       type: String
     },
+    name: {
+      type: String
+    }
   },
 };
 </script>

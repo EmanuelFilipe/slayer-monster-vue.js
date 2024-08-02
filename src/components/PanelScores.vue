@@ -1,6 +1,6 @@
 <template>
   <div class="panel scores" id="blinkingDiv">
-    <Score :characterName="'Player'" :characterLife="playerLife" :specialAttackPlayer="specialAttackPlayer" :idDiv="blinkingDiv_PLAYER" />
+    <Score :characterName="'Player'" :name="name" :characterLife="playerLife" :specialAttackPlayer="specialAttackPlayer" :idDiv="blinkingDiv_PLAYER" />
     <Score :characterName="'Monster'" :characterLife="monsterLife" :specialAttackMonster="specialAttackMonster" :idDiv="blinkingDiv_MONSTER"  />
   </div>
 </template>
@@ -29,6 +29,9 @@ export default {
       type: Number,
       required: false,
       default: 0,
+    },
+    name: {
+      type: String
     }
   },
   components: {

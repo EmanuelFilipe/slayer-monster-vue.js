@@ -6,7 +6,7 @@
        :disabled="specialAttackPlayer < 100" :class="specialAttackPlayer < 100 ? 'button-disabled' : 'button-enabled, animate-border-special-attack'">
         Special Attack
       </button>
-      <button @click="deffenseFunction" class="btn" style="background-color: brown; color: white">Deffense</button>
+      <button @click="defenseFunction" class="btn" style="background-color: brown; color: white">Defense</button>
       <button :disabled="countOfHeals == 0" @click="healAndHurtFunction" class="btn heal" :class="countOfHeals > 0 ? 'button-enabled' : 'button-disabled'">
         Heal <button id="contador" @click.prevent> {{ countOfHeals }}</button>
       </button>
@@ -42,7 +42,7 @@ export default {
     startGameFunction: Function,
     healAndHurtFunction: Function,
     updateRunningFunction: Function,
-    deffenseFunction: Function
+    defenseFunction: Function
   },
   methods: {
     attack(value) {
@@ -69,11 +69,11 @@ export default {
 }
 #contador {
    height: 30px;
-   width: 30px;
+   /* width: 30px; */
    border-radius: 15px;
    background-color: gold;
    color: black;
-   margin-left: 10px;
+   /* margin-left: 10px; */
    outline: none;
    font-size: 15px;
    font-weight: 600;

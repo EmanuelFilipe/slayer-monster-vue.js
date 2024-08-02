@@ -1,28 +1,74 @@
 <template>
   <div id="app">
-    <PanelScores
-      :playerLife="playerLife"
-      :monsterLife="monsterLife"
-      :specialAttackPlayer="specialAttackPlayer"
-      :specialAttackMonster="specialAttackMonster"
-    />
-    <div style="margin-left: 50px" class="move-div"></div>
-    <PanelResults :hasResult="hasResult" :monsterLife="monsterLife" />
-    <PanelButtons
-      :running="running"
-      :startGameFunction="startGame"
-      :healAndHurtFunction="healAndHurt"
-      :updateRunningFunction="updateRunning"
-      :deffenseFunction="deffense"
-      :countOfHeals="countOfHeals"
-      :specialAttackPlayer="specialAttackPlayer"
-      @attackPanelButton="attack($event)"
-    />
-    <PanelLogs :logs="logs" />
+    <div
+      id="selectionCharacter"
+      class="citacoes"
+      v-if="characterSelected.length == 0 && this.running"
+    >
+      <h2>Chose your player</h2>
+      <span>
+        <div style="text-align: center;">
+          <button @click="idCharacter--">&lt;</button>
+          <button @click="idCharacter++">&gt;</button>
+        </div>
+        <Character>
+          <img
+            slot="image"
+            width="100%"
+            height="100%"
+            :src="
+              require(`../src/assets/images/${characters[indice].name}.jpg`)
+            "
+          />
+          <p slot="name">
+            <strong>Name:</strong> {{ characters[indice].name }}
+          </p>
+          <p slot="attack">
+            <strong>Attack:</strong> {{ characters[indice].attack }}
+          </p>
+          <p slot="specialAttack">
+            <strong>Special Attack:</strong>
+            {{ characters[indice].specialAttack }}
+          </p>
+          <p slot="defense">
+            <strong>Defense:</strong> {{ characters[indice].defense }}
+          </p>
+        </Character>
+      </span>
+      <button
+        style="background-color: firebrick"
+        @click="funcPlayerSelected(characters[indice])"
+      >
+        SELECT CHARACTER
+      </button>
+    </div>
+    <div v-else>
+      <PanelScores
+        :name="characterSelected.name"
+        :playerLife="playerLife"
+        :monsterLife="monsterLife"
+        :specialAttackPlayer="specialAttackPlayer"
+        :specialAttackMonster="specialAttackMonster"
+      />
+      <div style="margin-left: 50px" class="move-div"></div>
+      <PanelResults :hasResult="hasResult" :monsterLife="monsterLife" />
+      <PanelButtons
+        :running="running"
+        :startGameFunction="startGame"
+        :healAndHurtFunction="healAndHurt"
+        :updateRunningFunction="updateRunning"
+        :defenseFunction="defense"
+        :countOfHeals="countOfHeals"
+        :specialAttackPlayer="specialAttackPlayer"
+        @attackPanelButton="attack($event)"
+      />
+      <PanelLogs :logs="logs" />
+    </div>
   </div>
 </template>
 
 <script>
+import Character from "./components/Character.vue";
 import PanelScores from "./components/PanelScores.vue";
 import PanelResults from "./components/PanelResults.vue";
 import PanelButtons from "./components/PanelButtons.vue";
@@ -34,12 +80,12 @@ export default {
     PanelResults,
     PanelButtons,
     PanelLogs,
+    Character,
   },
   data() {
     return {
       running: false,
       playerLife: 100,
-      deffensePlayer: 8,
       countOfHeals: 0,
       specialAttackPlayer: 0,
       specialAttackMonster: 0,
@@ -48,6 +94,46 @@ export default {
       round: 0,
       divScorePlayer: "",
       divScoreMonster: "",
+      idCharacter: 0,
+      characterSelected: [],
+      characters: [
+        {
+          id: 1,
+          name: "Knight",
+          image: "/assets/images/knight.jpg",
+          attack: [7, 12],
+          specialAttack: [12, 17],
+          defense: [10, 15],
+          heal: [6, 10],
+        },
+        {
+          id: 2,
+          name: "Warrior",
+          image: "../assets/images/warrior.jpg",
+          attack: [8, 14],
+          specialAttack: [13, 18],
+          defense: [8, 13],
+          heal: [6, 10],
+        },
+        {
+          id: 3,
+          name: "Ranger",
+          image: "../assets/images/ranger.jpg",
+          attack: [6, 11],
+          specialAttack: [11, 16],
+          defense: [7, 12],
+          heal: [6, 10],
+        },
+        {
+          id: 4,
+          name: "Mage",
+          image: "../assets/images/mage.jpg",
+          attack: [4, 8],
+          specialAttack: [15, 20],
+          defense: [4, 6],
+          heal: [10, 15],
+        },
+      ],
     };
   },
   computed: {
@@ -57,6 +143,10 @@ export default {
     characterRound() {
       return this.round;
     },
+    indice() {
+      let result = Math.abs(this.idCharacter % 4);
+      return result;
+    },
   },
   methods: {
     attackButton() {
@@ -64,6 +154,7 @@ export default {
     },
     updateRunning() {
       this.running = false;
+      this.logs = [];
     },
     startGame() {
       this.round = 0;
@@ -74,21 +165,24 @@ export default {
       this.specialAttackPlayer = 0;
       this.specialAttackMonster = 0;
       this.logs = [];
+      this.characterSelected = [];
+      this.idCharacter = 0;
       this.divScorePlayer = document.getElementById("blinkingDiv_PLAYER");
       this.divScoreMonster = document.getElementById("blinkingDiv_MONSTER");
     },
-    deffense() {
+    defense() {
       this.registerLog("Player used Defense this turn", "player");
-      this.turnMonster();
+      this.turnMonster(true);
       this.blinkingDiv("blinkingDiv_PLAYER");
       this.attackAnimation(this.divScoreMonster, "move-div-monster");
       this.logs.unshift([]);
     },
     turnPlayer(special) {
+      let attack = this.characterSelected.attack;
       this.hurtMonster(
         "monsterLife",
-        5,
-        10,
+        attack[0],
+        attack[1],
         special,
         "Player",
         "Monster",
@@ -96,16 +190,17 @@ export default {
       );
       this.increaseSpecialAttackBarPlayer(special);
     },
-    turnMonster() {
+    turnMonster(playerDefended = false) {
       if (this.monsterLife > 0) {
         this.hurtPlayer(
           "playerLife",
-          8,
-          15,
+          10,
+          17,
           this.specialAttackMonster == 100 ? true : false,
           "Monster",
           "Player",
-          "monster"
+          "monster",
+          playerDefended
         );
 
         if (this.specialAttackMonster == 100) this.specialAttackMonster = 0;
@@ -175,11 +270,11 @@ export default {
       source,
       target,
       cls,
-      deffenseActivated
+      defenseActivated
     ) {
       const plus = special ? this.getRandom(20, 30) : 0;
       //const damage = this.getRandom(min + plus, max + plus);
-      const damage = this.getDamage(min, max, plus, deffenseActivated);
+      const damage = this.getDamage(min, max, plus, defenseActivated);
       // evita que o numero seja negativo, nesse caso, retornará 0
       this[prop] = Math.max(this[prop] - damage, 0);
 
@@ -196,7 +291,10 @@ export default {
       }
     },
     hurtMonster(prop, min, max, special, source, target, cls) {
-      const plus = special ? this.getRandom(15, 25) : 0;
+      let specialAttack = this.characterSelected.specialAttack;
+      const plus = special
+        ? this.getRandom(specialAttack[0], specialAttack[1])
+        : 0;
       //const damage = this.getRandom(min + plus, max + plus);
       const damage = this.getDamage(min, max, plus, false);
       // evita que o numero seja negativo, nesse caso, retornará 0
@@ -221,10 +319,10 @@ export default {
      * @param {*} target: o alvo do ataque
      * @param {*} cls: qual a classe que será passada par quem se feriu
      */
-    hurtEnemy(prop, min, max, special, source, target, cls, deffenseActivated) {
+    hurtEnemy(prop, min, max, special, source, target, cls, defenseActivated) {
       const plus = special ? this.getRandom(5, 10) : 0;
       //const damage = this.getRandom(min + plus, max + plus);
-      const damage = this.getDamage(min, max, plus, deffenseActivated);
+      const damage = this.getDamage(min, max, plus, defenseActivated);
       // evita que o numero seja negativo, nesse caso, retornará 0
       this[prop] = Math.max(this[prop] - damage, 0);
 
@@ -240,10 +338,14 @@ export default {
         );
       }
     },
-    getDamage(min, max, plus, deffenseActivated) {
+    getDamage(min, max, plus, defenseActivated) {
       let damage = this.getRandom(min + plus, max + plus);
 
-      if (deffenseActivated) damage -= this.deffensePlayer;
+      if (defenseActivated) {
+        const playerDefense = this.characterSelected.defense;
+        let defense = this.getRandom(playerDefense[0], playerDefense[1]);
+        damage -= defense;
+      }
 
       return damage;
     },
@@ -252,7 +354,7 @@ export default {
       return Math.round(value);
     },
     healAndHurt() {
-      this.heal(10, 15);
+      this.heal();
       this.countOfHeals -= 1;
       this.turnMonster();
       this.blinkingDiv("blinkingDiv_PLAYER");
@@ -260,8 +362,9 @@ export default {
       //insert a empy row on array logs
       this.logs.unshift([]);
     },
-    heal(min, max) {
-      const heal = this.getRandom(min, max);
+    heal() {
+      let healPlayer = this.characterSelected.heal;
+      const heal = this.getRandom(healPlayer[0], healPlayer[1]);
       // se o resultado der maior que 100, irá pegar o valor 100
       this.playerLife = Math.min(this.playerLife + heal, 100);
       this.registerLog(`Player received health: ${heal}`, "player");
@@ -276,6 +379,9 @@ export default {
       else if (this.round % 2 === 0) characterTurn = MONSTER;
       return characterTurn;
     },
+    funcPlayerSelected(character) {
+      this.characterSelected = character;
+    },
   },
   watch: {
     // sempre que essa variavel for alterada, será monitorada
@@ -285,3 +391,23 @@ export default {
   },
 };
 </script>
+
+<style>
+button {
+  outline: none;
+  padding: 5px 15px 10px;
+  margin: 10px 5px;
+  border-radius: 3px;
+  font-size: 2rem;
+  font-weight: 300;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.citacoes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+</style>
