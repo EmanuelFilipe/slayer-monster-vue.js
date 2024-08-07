@@ -70,8 +70,6 @@ export default {
       agilityMonster: 15,
       logs: [],
       round: 0,
-      divScorePlayer: "",
-      divScoreMonster: "",
       idCharacter: 0,
       dificultDodgePlayer: 0,
       dificultDodgeMonster: 0,
@@ -153,14 +151,12 @@ export default {
       this.idCharacter = 0;
       this.dificultDodgePlayer = 28;
       this.dificultDodgeMonster = 35;
-      this.divScorePlayer = document.getElementById("blinkingDiv_PLAYER");
-      this.divScoreMonster = document.getElementById("blinkingDiv_MONSTER");
     },
     defense() {
       this.registerLog("Player used Defense this turn", "player");
       this.turnMonster(true);
       this.blinkingDiv("blinkingDiv_PLAYER");
-      this.attackAnimation(this.divScoreMonster, "move-div-monster");
+      this.attackAnimation(document.getElementById("blinkingDiv_MONSTER"), "move-div-monster");
       this.logs.unshift([]);
     },
     turnPlayer(special) {
@@ -198,7 +194,7 @@ export default {
           console.log("monstro falou na esquiva");
           this.turnPlayer(special);
           this.blinkingDiv("blinkingDiv_MONSTER");
-          this.attackAnimation(this.divScorePlayer, "move-div-player");
+          this.attackAnimation(document.getElementById("blinkingDiv_PLAYER"), "move-div-player");
         } else {
           console.log("monstro conseguiu se esquivar");
           this.registerLog("Monster dodged the attack", "monster");
@@ -214,7 +210,7 @@ export default {
             divButtons[0].style.display = "none";
             this.turnMonster();
             this.blinkingDiv("blinkingDiv_PLAYER");
-            this.attackAnimation(this.divScoreMonster, "move-div-monster");
+            this.attackAnimation(document.getElementById("blinkingDiv_MONSTER"), "move-div-monster");
           }, 2000);
           setTimeout(() => {
             divButtons[0].style.display = "";
@@ -354,7 +350,7 @@ export default {
       this.countOfHeals -= 1;
       this.turnMonster();
       this.blinkingDiv("blinkingDiv_PLAYER");
-      this.attackAnimation(this.divScoreMonster, "move-div-monster");
+      this.attackAnimation(document.getElementById("blinkingDiv_MONSTER"), "move-div-monster");
       //insert a empy row on array logs
       this.logs.unshift([]);
     },
