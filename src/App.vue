@@ -5,42 +5,14 @@
       class="citacoes"
       v-if="characterSelected.length == 0 && this.running"
     >
-      <h2>Chose your player</h2>
-      <span>
-        <div style="text-align: center;">
-          <button @click="idCharacter--">&lt;</button>
-          <button @click="idCharacter++">&gt;</button>
-        </div>
-        <Character>
-          <img
-            slot="image"
-            width="100%"
-            height="100%"
-            :src="
-              require(`../src/assets/images/${characters[indice].name}.jpg`)
-            "
-          />
-          <p slot="name">
-            <strong>Name:</strong> {{ characters[indice].name }}
-          </p>
-          <p slot="attack">
-            <strong>Attack:</strong> {{ characters[indice].attack }}
-          </p>
-          <p slot="specialAttack">
-            <strong>Special Attack:</strong>
-            {{ characters[indice].specialAttack }}
-          </p>
-          <p slot="defense">
-            <strong>Defense:</strong> {{ characters[indice].defense }}
-          </p>
-        </Character>
-      </span>
-      <button
-        style="background-color: firebrick"
-        @click="funcPlayerSelected(characters[indice])"
-      >
-        SELECT CHARACTER
-      </button>
+      <SelectionPlayer
+        :idCharacter="idCharacter"
+        :characters="characters"
+        :indice="indice"
+        :alterValueIdCharacterMinus="reduceValueIdCharacter"
+        :alterValueIdCharacterMore="increaseValueIdCharacter"
+        @playerWasSelected="funcPlayerSelected($event)"
+      />
     </div>
     <div v-else>
       <PanelScores
@@ -62,39 +34,47 @@
         :specialAttackPlayer="specialAttackPlayer"
         @attackPanelButton="attack($event)"
       />
+      <!-- <div class="citacoes">
+        <img :src="gifSrc" alt="my gif" class="my-gif-class" />
+      </div> -->
       <PanelLogs :logs="logs" />
     </div>
   </div>
 </template>
 
 <script>
-import Character from "./components/Character.vue";
+import SelectionPlayer from "./components/SelectionPlayer.vue";
 import PanelScores from "./components/PanelScores.vue";
 import PanelResults from "./components/PanelResults.vue";
 import PanelButtons from "./components/PanelButtons.vue";
 import PanelLogs from "./components/PanelLogs.vue";
 import { PLAYER, MONSTER } from "../src/constants.js";
+import myGif from "../src/assets/images/rolling-dice.gif";
 export default {
   components: {
     PanelScores,
     PanelResults,
     PanelButtons,
     PanelLogs,
-    Character,
+    SelectionPlayer,
   },
   data() {
     return {
+      gifSrc: myGif,
       running: false,
       playerLife: 100,
       countOfHeals: 0,
       specialAttackPlayer: 0,
       specialAttackMonster: 0,
       monsterLife: 100,
+      agilityMonster: 15,
       logs: [],
       round: 0,
       divScorePlayer: "",
       divScoreMonster: "",
       idCharacter: 0,
+      dificultDodgePlayer: 0,
+      dificultDodgeMonster: 0,
       characterSelected: [],
       characters: [
         {
@@ -104,6 +84,7 @@ export default {
           attack: [7, 12],
           specialAttack: [12, 17],
           defense: [10, 15],
+          agility: 12,
           heal: [6, 10],
         },
         {
@@ -113,6 +94,7 @@ export default {
           attack: [8, 14],
           specialAttack: [13, 18],
           defense: [8, 13],
+          agility: 13,
           heal: [6, 10],
         },
         {
@@ -122,6 +104,7 @@ export default {
           attack: [6, 11],
           specialAttack: [11, 16],
           defense: [7, 12],
+          agility: 16,
           heal: [6, 10],
         },
         {
@@ -131,6 +114,7 @@ export default {
           attack: [4, 8],
           specialAttack: [15, 20],
           defense: [4, 6],
+          agility: 10,
           heal: [10, 15],
         },
       ],
@@ -167,6 +151,8 @@ export default {
       this.logs = [];
       this.characterSelected = [];
       this.idCharacter = 0;
+      this.dificultDodgePlayer = 28;
+      this.dificultDodgeMonster = 35;
       this.divScorePlayer = document.getElementById("blinkingDiv_PLAYER");
       this.divScoreMonster = document.getElementById("blinkingDiv_MONSTER");
     },
@@ -191,42 +177,54 @@ export default {
       this.increaseSpecialAttackBarPlayer(special);
     },
     turnMonster(playerDefended = false) {
-      if (this.monsterLife > 0) {
-        this.hurtPlayer(
-          "playerLife",
-          10,
-          17,
-          this.specialAttackMonster == 100 ? true : false,
-          "Monster",
-          "Player",
-          "monster",
-          playerDefended
-        );
+      this.hurtPlayer(
+        "playerLife",
+        10,
+        17,
+        this.specialAttackMonster == 100 ? true : false,
+        "Monster",
+        "Player",
+        "monster",
+        playerDefended
+      );
 
-        if (this.specialAttackMonster == 100) this.specialAttackMonster = 0;
-        else this.increaseSpecialAttackBarMonster();
-      }
+      if (this.specialAttackMonster == 100) this.specialAttackMonster = 0;
+      else this.increaseSpecialAttackBarMonster();
     },
     attack(special) {
       this.round++;
-      if (this.getCharacterRound() === PLAYER) {
-        this.turnPlayer(special);
-        this.blinkingDiv("blinkingDiv_MONSTER");
-        this.attackAnimation(this.divScorePlayer, "move-div-player");
+      if (this.getCharacterRound() === PLAYER && this.playerLife > 0) {
+        if (!this.dodgeAttemptMonster() || special) {
+          console.log("monstro falou na esquiva");
+          this.turnPlayer(special);
+          this.blinkingDiv("blinkingDiv_MONSTER");
+          this.attackAnimation(this.divScorePlayer, "move-div-player");
+        } else {
+          console.log("monstro conseguiu se esquivar");
+          this.registerLog("Monster dodged the attack", "monster");
+        }
         this.round++;
       }
 
-      if (this.getCharacterRound() === MONSTER) {
-        var divButtons = document.getElementsByClassName("panel buttons");
-        setTimeout(() => {
-          divButtons[0].style.display = "none";
-          this.turnMonster();
-          this.blinkingDiv("blinkingDiv_PLAYER");
-          this.attackAnimation(this.divScoreMonster, "move-div-monster");
-        }, 2000);
-        setTimeout(() => {
-          divButtons[0].style.display = "";
-        }, 4000);
+      if (this.getCharacterRound() === MONSTER && this.monsterLife > 0) {
+        if (!this.dodgeAttemptPlayer()) {
+          console.log("player falhou na esquiva");
+          var divButtons = document.getElementsByClassName("panel buttons");
+          setTimeout(() => {
+            divButtons[0].style.display = "none";
+            this.turnMonster();
+            this.blinkingDiv("blinkingDiv_PLAYER");
+            this.attackAnimation(this.divScoreMonster, "move-div-monster");
+          }, 2000);
+          setTimeout(() => {
+            divButtons[0].style.display = "";
+          }, 4000);
+        } else {
+          console.log("player se esquivou");
+          setTimeout(() => {
+            this.registerLog(`Player dodged the attack`, "player");
+          }, 2000);
+        }
       }
       //insert a empy row on array logs
       //this.logs.unshift([]);
@@ -239,11 +237,18 @@ export default {
     },
     increaseSpecialAttackBarPlayer(special) {
       if (special) this.specialAttackPlayer = 0;
-      else if (!special && this.playerLife > 0) this.specialAttackPlayer += 10;
+      else if (!special && this.playerLife > 0) {
+        if (this.specialAttackPlayer < 100) this.specialAttackPlayer += 20;
+      }
     },
     increaseSpecialAttackBarMonster() {
       if (this.specialAttackMonster === 100) this.specialAttackMonster = 0;
-      if (this.monsterLife > 0) this.specialAttackMonster += 20;
+
+      if (this.monsterLife > 0) {
+        if (this.specialAttackMonster + 13 > 100)
+          this.specialAttackMonster = 100;
+        else this.specialAttackMonster += 13;
+      }
     },
     blinkingDiv(divName) {
       const blinkingDiv = document.getElementById(divName);
@@ -262,16 +267,7 @@ export default {
         }
       }, interval);
     },
-    hurtPlayer(
-      prop,
-      min,
-      max,
-      special,
-      source,
-      target,
-      cls,
-      defenseActivated
-    ) {
+    hurtPlayer(prop, min, max, special, source, target, cls, defenseActivated) {
       const plus = special ? this.getRandom(20, 30) : 0;
       //const damage = this.getRandom(min + plus, max + plus);
       const damage = this.getDamage(min, max, plus, defenseActivated);
@@ -382,6 +378,46 @@ export default {
     funcPlayerSelected(character) {
       this.characterSelected = character;
     },
+    reduceValueIdCharacter() {
+      this.idCharacter--;
+      console.log("reduceValueIdCharacter", this.idCharacter);
+    },
+    increaseValueIdCharacter() {
+      this.idCharacter++;
+      console.log("increaseValueIdCharacter", this.idCharacter);
+    },
+    dodgeAttemptPlayer() {
+      const roll = this.rollDice();
+      var result = this.testDiceRoll(
+        roll,
+        this.characterSelected.agility,
+        this.dificultDodgePlayer
+      );
+      return result;
+    },
+    dodgeAttemptMonster() {
+      const roll = this.rollDice();
+      var result = this.testDiceRoll(
+        roll,
+        this.agilityMonster,
+        this.dificultDodgeMonster
+      );
+      return result;
+    },
+    testDiceRoll(roll, agility, dificultDodge) {
+      //critical hit
+      if (roll === 20) return true;
+      // critic fail
+      else if (roll === 1) return false;
+      else if (roll + agility >= dificultDodge) return true;
+      else return false;
+    },
+    rollDice() {
+      // generate aleatory number between 1 and 20
+      const roll = Math.floor(Math.random() * 20) + 1;
+      console.log("roll", roll);
+      return roll;
+    },
   },
   watch: {
     // sempre que essa variavel for alterada, será monitorada
@@ -409,5 +445,11 @@ button {
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+}
+.my-gif-class {
+  width: 100px;
+  height: auto;
+  text-align: center;
+  align-content: center;
 }
 </style>
