@@ -53,12 +53,6 @@ export default {
 </script>
 
 <style scoped>
-/* .contador span {
-   border-bottom: 1px solid #ccc;
-   height: 30px;
-   padding: 5px 25px;
-} */
-
 .button-enabled {
   cursor: pointer; 
 }
@@ -69,11 +63,9 @@ export default {
 }
 #contador {
    height: 30px;
-   /* width: 30px; */
    border-radius: 15px;
    background-color: gold;
    color: black;
-   /* margin-left: 10px; */
    outline: none;
    font-size: 15px;
    font-weight: 600;
@@ -83,6 +75,7 @@ export default {
     border: 1px solid white;
     animation: borderIncrease 2s ease-in-out;    
     animation-iteration-count: 20;
+    font-weight: bold;
 }
 
 @keyframes borderIncrease {

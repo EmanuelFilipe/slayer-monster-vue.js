@@ -196,7 +196,7 @@
       },
       attack(special) {
         this.round++;
-        if (this.getCharacterRound() === PLAYER && this.playerLife > 0) {
+        if (this.getCharacterRound() === PLAYER && (this.playerLife > 0 && this.monsterLife > 0)) {
           if (!this.dodgeAttemptMonster() || special) {
             console.log("monstro falou na esquiva");
             this.turnPlayer(special);
@@ -209,7 +209,7 @@
           this.round++;
         }
   
-        if (this.getCharacterRound() === MONSTER && this.monsterLife > 0) {
+        if (this.getCharacterRound() === MONSTER && (this.monsterLife > 0 && this.playerLife > 0 )) {
           if (!this.dodgeAttemptPlayer()) {
             console.log("player falhou na esquiva");
             var divButtons = document.getElementsByClassName("panel buttons");

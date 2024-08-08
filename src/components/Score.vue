@@ -82,7 +82,6 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  /*justify-content: center;*/
   align-items: center;
 }
 
@@ -112,7 +111,6 @@ export default {
   width: 80%;
   height: 20px;
   border: 2px solid #aaa;
-  /*border: 2px solid rgb(236, 171, 7);*/
 }
 
 .life-bar-monster .life {
@@ -121,19 +119,6 @@ export default {
   height: 100%;
   background-color: red;
 }
-
-/* .mana-bar {
-  width: 80%;
-  height: 20px;
-  border: 1px solid #aaa;
-}
-
-.mana-bar .mana {
-  display: flex;
-  justify-content: center;
-  height: 100%;
-  background-color: rgb(11, 79, 226);
-} */
 
 .special-bar {
   width: 80%;

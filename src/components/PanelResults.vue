@@ -1,7 +1,7 @@
 <template>
   <div v-if="hasResult" class="panel result">
-    <div v-if="monsterLife == 0" class="win">Você ganhou!!! :)</div>
-    <div v-else class="lose">Você perdeu! :(</div>
+    <div v-if="monsterLife == 0" class="win">YOU WIN!!! :)</div>
+    <div v-else class="lose">YOU LOSE! :(</div>
   </div>
 </template>
 
@@ -22,6 +22,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-</style>

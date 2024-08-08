@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="text-align: center"><h1>Chose your player</h1></div> 
+    <div style="text-align: center"><h1>Choose your player</h1></div> 
     <span>
       <div style="text-align: center">
         <button @click="alterValueIdCharacterMinus">&lt;</button>
@@ -68,6 +68,3 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-</style>

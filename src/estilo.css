@@ -2,7 +2,6 @@ body {
 	font-family: 'Montserrat', sans-serif;
 	color: #fff;
 	background: linear-gradient(to right, rgb(29, 109, 151), rgb(10, 61, 54));
-    /*background: linear-gradient(to right, rgb(8, 80, 120), rgb(133, 216, 206));*/
 }
 
 /* GENERAL */
@@ -22,7 +21,6 @@ button {
 .panel {
     margin: 10px;
     padding: 20px;
-    /*box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);*/
     box-shadow: 0 2px 10px black;
 }
 
@@ -35,11 +33,13 @@ button {
 }
 
 .result .win {
-    color: green;
+    color: ghostwhite;
+    font-size: 50px;
 }
 
 .result .lose {
     color: red;
+    font-size: 50px;
 }
 
 /* Buttons area */
@@ -121,6 +121,7 @@ button {
 .new-game {
     background-color: #4253af;
     color: #fff;
+    font-size: xx-large;
 }
 
 /* Logs area */

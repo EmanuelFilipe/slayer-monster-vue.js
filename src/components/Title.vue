@@ -12,7 +12,7 @@ export default {
   name: "Title",
   methods: {
     callMainScreen() {
-      this.$emit("redirecionarTela")
+      this.$emit("screenRedirect")
     }
   }
 };

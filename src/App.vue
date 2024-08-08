@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <keep-alive>
-			<component :is="componente" @redirecionarTela="redirectComponent"/>
+			<component :is="componente" @screenRedirect="redirectComponent"/>
 		</keep-alive>
   </div>
 </template>
@@ -27,7 +27,3 @@ import MainGame from './components/MainGame.vue'
     }
   }
 </script>
-
-<style scoped>
-
-</style>
