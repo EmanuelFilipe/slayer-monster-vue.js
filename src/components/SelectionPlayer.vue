@@ -11,7 +11,8 @@
           slot="image"
           width="100%"
           height="100%"
-          :src="require(`../../src/assets/images/${characters[indice].name}.jpg`)"
+          alt="player"
+          :src="require(`@/assets/images/${characters[indice].name}.jpg`)"
         />
         <p slot="name"><strong>Name:</strong> {{ characters[indice].name }}</p>
         <p slot="attack">
@@ -29,7 +30,7 @@
         </p>
       </Character>
     </span>
-    <button
+    <button class="button"
       style="background-color: firebrick"
       @click="playerSelected(characters[indice])"
     >
@@ -68,3 +69,10 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+  .button {
+    font-size: 1.5rem !important;
+    margin: 10px 18px !important;
+  }
+</style>

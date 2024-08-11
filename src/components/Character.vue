@@ -20,7 +20,7 @@
         border: 1px solid #DDD;
         background-color: rgba(0, 0, 0, .1);
         padding: 25px;
-        max-width: 290px;
+        max-width: 235px;
         margin-top: 10px;
         margin-left: 18px;
     }
