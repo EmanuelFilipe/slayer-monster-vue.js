@@ -1,5 +1,7 @@
 # monster slayer
 
+https://github.com/user-attachments/assets/9e027d00-d1ea-4e5c-889e-9405d0649af8
+
 ## Project setup
 ```
 npm install
@@ -14,11 +16,3 @@ npm run serve
 ```
 npm run build
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
