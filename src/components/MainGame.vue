@@ -79,7 +79,7 @@
           {
             id: 1,
             name: "Knight",
-            image: "/assets/images/knight.jpg",
+            image: "../assets/images/knight.jpg",
             attack: [7, 12],
             specialAttack: [12, 17],
             defense: [10, 15],
